@@ -73,7 +73,7 @@ app.post('/webhook', async (req, res) => {
         // Devolver la respuesta de Gemini al usuario por WhatsApp
         await axios({
           method: 'POST',
-          url: `[https://graph.facebook.com/v20.0/$](https://graph.facebook.com/v20.0/$){PHONE_NUMBER_ID}/messages`,
+          url: `https://graph.facebook.com/v20.0/${PHONE_NUMBER_ID}/messages`,
           headers: {
             Authorization: `Bearer ${WHATSAPP_TOKEN}`,
             'Content-Type': 'application/json',
