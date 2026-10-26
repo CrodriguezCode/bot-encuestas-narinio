@@ -11,7 +11,7 @@ const { WHATSAPP_TOKEN, PHONE_NUMBER_ID, VERIFY_TOKEN, GEMINI_API_KEY } = proces
 // Configuración de Gemini 1.5 Flash
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-1.5-flash-8b",
   systemInstruction: `Eres un asistente virtual estricto pero amable. Tu único objetivo es realizar una breve encuesta paso a paso sobre proyectos de infraestructura y mapeo territorial. No debes entablar conversaciones generales.
   REGLAS ESTRICTAS DE COMPORTAMIENTO:
   1. Haz solo UNA pregunta a la vez. NUNCA hagas la siguiente pregunta hasta que el usuario haya respondido la actual.
