@@ -9,7 +9,6 @@ const { WHATSAPP_TOKEN, PHONE_NUMBER_ID, VERIFY_TOKEN, GEMINI_API_KEY } = proces
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
-  // Si te funcionó con gemini-3.8-flash déjalo así, o usa la versión oficial 002:
   model: "gemini-3.8-flash", 
   systemInstruction: `Eres un asistente virtual estricto pero amable. Tu único objetivo es realizar una breve encuesta paso a paso sobre proyectos de infraestructura y mapeo territorial. No debes entablar conversaciones generales.
   REGLAS ESTRICTAS DE COMPORTAMIENTO:
@@ -45,8 +44,10 @@ app.post('/webhook', async (req, res) => {
       const message = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
       if (message && message.type === 'text') {
-        const phone = message.from; // Capturamos el número del usuario
+        const phone = message.from; 
         const text = message.text.body;
+
+        if (!phone) return; // Si no hay número, aborta para evitar el error 400
 
         if (!userSessions[phone]) {
           userSessions[phone] = model.startChat({ history: [] });
@@ -62,24 +63,27 @@ app.post('/webhook', async (req, res) => {
           console.log(`====================================================\n`);
         }
 
-        // Devolvemos la respuesta asegurando la variable "to: phone"
+        // Envío blindado hacia WhatsApp
         await axios({
           method: 'POST',
-          url: "https://graph.facebook.com/v20.0/" + PHONE_NUMBER_ID + "/messages",
+          url: "[https://graph.facebook.com/v20.0/](https://graph.facebook.com/v20.0/)" + PHONE_NUMBER_ID + "/messages",
           headers: {
             Authorization: `Bearer ${WHATSAPP_TOKEN}`,
             'Content-Type': 'application/json',
           },
           data: {
             messaging_product: 'whatsapp',
-            to: phone, // ¡Esta es la línea que faltaba!
+            to: phone.toString(), // Forzamos a que el número viaje como texto
+            type: 'text',
             text: { body: botResponse },
           },
         });
+        console.log(`Mensaje enviado exitosamente a ${phone}`);
       }
     }
   } catch (error) {
-    console.error("Error en el proceso:", error);
+    // Esto nos mostrará el error exacto de Meta si llega a fallar algo más
+    console.error("Error en el proceso:", error.response?.data || error.message);
   }
 });
 
