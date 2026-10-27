@@ -57,10 +57,31 @@ app.post('/webhook', async (req, res) => {
         const result = await chat.sendMessage(text);
         const botResponse = result.response.text();
 
-        if (botResponse.includes('```json')) {
+if (botResponse.includes('```json') || botResponse.includes('{')) {
           console.log(`\n=== ENCUESTA FINALIZADA PARA EL NÚMERO ${phone} ===`);
           console.log(botResponse);
           console.log(`====================================================\n`);
+
+          // Filtramos el texto extra para atrapar únicamente el bloque JSON
+          const jsonMatch = botResponse.match(/\{[\s\S]*\}/);
+          
+          if (jsonMatch) {
+            try {
+              const encuestado = JSON.parse(jsonMatch[0]);
+
+              // Disparamos los datos hacia Google Sheets
+              await axios.post('TU_URL_AQUI', {
+                telefono: phone.toString(),
+                municipio: encuestado.municipio,
+                experiencia: encuestado.experiencia,
+                disposicion: encuestado.disposicion
+              });
+              
+              console.log(`✅ Fila guardada en Google Sheets para: ${phone}`);
+            } catch (err) {
+              console.error("❌ Error al guardar en Sheets:", err.message);
+            }
+          }
         }
 
 
