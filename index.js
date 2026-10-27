@@ -70,7 +70,7 @@ if (botResponse.includes('```json') || botResponse.includes('{')) {
               const encuestado = JSON.parse(jsonMatch[0]);
 
               // Disparamos los datos hacia Google Sheets
-              await axios.post('TU_URL_AQUI', {
+              await axios.post('https://script.google.com/macros/s/AKfycbxmHIaHkrBvpe-Tkd24dGSc3OhlcV3unoSSTu_Piy9HD85BoOGunscAobTqBNAtVVtA/exec', {
                 telefono: phone.toString(),
                 municipio: encuestado.municipio,
                 experiencia: encuestado.experiencia,
