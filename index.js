@@ -63,17 +63,21 @@ app.post('/webhook', async (req, res) => {
           console.log(`====================================================\n`);
         }
 
-        // Envío blindado hacia WhatsApp
+
+// Envío súper blindado hacia WhatsApp (limpiando espacios invisibles)
+        const cleanPhoneId = String(PHONE_NUMBER_ID).trim();
+        const urlMeta = "https://graph.facebook.com/v20.0/" + cleanPhoneId + "/messages";
+
         await axios({
           method: 'POST',
-          url: "[https://graph.facebook.com/v20.0/](https://graph.facebook.com/v20.0/)" + PHONE_NUMBER_ID + "/messages",
+          url: urlMeta,
           headers: {
-            Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+            Authorization: `Bearer ${String(WHATSAPP_TOKEN).trim()}`,
             'Content-Type': 'application/json',
           },
           data: {
             messaging_product: 'whatsapp',
-            to: phone.toString(), // Forzamos a que el número viaje como texto
+            to: phone.toString(),
             type: 'text',
             text: { body: botResponse },
           },
